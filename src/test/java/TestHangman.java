@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tdd.Hangman;
 
@@ -8,12 +10,25 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class TestHangman {
+    public static Hangman hangman;
+    public static Random random;
+    int requestedLength;
+
+    @BeforeAll
+    static void setupClass() {
+        random = new Random();
+        hangman = new Hangman();
+        hangman.loadWords();
+    }
+
+    @BeforeEach
+    public void setupTest() {
+        requestedLength = random.nextInt(6) + 5;
+    }
     @Test
     void test_AlphabetCountInAWord() {
         String word = "pizza";
         char alphabet = 'a';
-
-        Hangman hangman = new Hangman();
         int count = hangman.countAlphabetInAWord(word, alphabet);
 
         assertEquals(1, count);
@@ -24,9 +39,6 @@ public class TestHangman {
         //From 5-10
         Random random = new Random();
         int expectedLength = random.nextInt(6) + 5;
-
-        Hangman hangman = new Hangman();
-        hangman.loadWords();
         String randomWord = hangman.randomFetchedWord(expectedLength);
 
         assertEquals(expectedLength, randomWord.length());
@@ -34,13 +46,9 @@ public class TestHangman {
 
     @Test
     void test_uniquenessOfFetchedWord() throws FileNotFoundException {
-        Random random = new Random();
-        int requestedLength = 0;
         Set<String> usedWordsSet = new HashSet<>();
         int round = 0;
         String word = null;
-        Hangman hangman = new Hangman();
-        hangman.loadWords();
         while (round < 100) {
             requestedLength = random.nextInt(6) + 5;
             word = hangman.randomFetchedWord(requestedLength);
