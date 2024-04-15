@@ -8,6 +8,9 @@ import java.util.*;
 
 public class Hangman {
 
+    public static final int MAX_TRIALS = 10;
+    public int remainingTrials;
+    public int score = 0;
     Set<String> usedWordsSet = new HashSet<>();
     List<String> wordsList = new ArrayList<>();
 
@@ -37,14 +40,17 @@ public class Hangman {
     }
 
     public String randomFetchedWord(int expectedLength) {
-        for (String result : wordsList) {
-            if (result.length() != expectedLength){
+        String result = null;
+        remainingTrials = MAX_TRIALS;
+        for (String word : wordsList) {
+            if (word.length() != expectedLength){
                 continue;
-            } else if (usedWordsSet.add(result)) {
-                return result;
+            } else if (usedWordsSet.add(word)) {
+                result = word;
+                break;
             }
         }
-        return null;
+        return result;
     }
 
     public String generateClue(String word) {
@@ -56,6 +62,7 @@ public class Hangman {
     }
 
     public String generateClue(String word, String clue, char guess) {
+        remainingTrials--;
         if (guess >= 'A' && guess <= 'Z') guess += 32;
         if (guess < 'a' || guess > 'z') throw new IllegalArgumentException("Invalid Character");
 
@@ -63,10 +70,10 @@ public class Hangman {
         for (int i = 0; i < word.length(); i++){
             if (guess == word.charAt(i) && guess != clue.charAt(i)){
                 newClue.append(guess);
+                score += (double) MAX_TRIALS/word.length();
             }
             else newClue.append(clue.charAt(i));
         }
         return newClue.toString();
     }
-
 }
