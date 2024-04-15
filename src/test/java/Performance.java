@@ -16,7 +16,7 @@ public class Performance {
     @BeforeAll
     static void setupClass() {
         random = new Random();
-        hangman = new Hangman();
+        //hangman = new Hangman();
         hangman.loadWords();
     }
 

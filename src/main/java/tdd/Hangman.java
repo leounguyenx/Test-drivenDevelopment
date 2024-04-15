@@ -1,5 +1,7 @@
 package tdd;
 
+import mocking.MockScoreDB;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,11 +16,17 @@ public class Hangman {
     Set<String> usedWordsSet = new HashSet<>();
     List<String> wordsList = new ArrayList<>();
 
+    MockScoreDB mockScoreDB;
+
+    public Hangman(MockScoreDB mockScoreDB) {
+        this.mockScoreDB = mockScoreDB;
+    }
+
 
     public int countAlphabetInAWord(String word, char alphabet) {
         int result = 0;
 
-        for (char c : word.toCharArray()){
+        for (char c : word.toCharArray()) {
             if (c == alphabet) {
                 result++;
             }
@@ -27,14 +35,13 @@ public class Hangman {
         return result;
     }
 
-    public void loadWords(){
+    public void loadWords() {
         String word = null;
-        try (BufferedReader br = new BufferedReader(new FileReader("WordSource.txt"))){
+        try (BufferedReader br = new BufferedReader(new FileReader("WordSource.txt"))) {
             while ((word = br.readLine()) != null) {
                 wordsList.add(word);
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -43,7 +50,7 @@ public class Hangman {
         String result = null;
         remainingTrials = MAX_TRIALS;
         for (String word : wordsList) {
-            if (word.length() != expectedLength){
+            if (word.length() != expectedLength) {
                 continue;
             } else if (usedWordsSet.add(word)) {
                 result = word;
@@ -55,7 +62,7 @@ public class Hangman {
 
     public String generateClue(String word) {
         StringBuilder clue = new StringBuilder();
-        for (int i = 0; i < word.length(); i++){
+        for (int i = 0; i < word.length(); i++) {
             clue.append("-");
         }
         return clue.toString();
@@ -67,13 +74,16 @@ public class Hangman {
         if (guess < 'a' || guess > 'z') throw new IllegalArgumentException("Invalid Character");
 
         StringBuilder newClue = new StringBuilder();
-        for (int i = 0; i < word.length(); i++){
-            if (guess == word.charAt(i) && guess != clue.charAt(i)){
+        for (int i = 0; i < word.length(); i++) {
+            if (guess == word.charAt(i) && guess != clue.charAt(i)) {
                 newClue.append(guess);
-                score += (double) MAX_TRIALS/word.length();
-            }
-            else newClue.append(clue.charAt(i));
+                score += (double) MAX_TRIALS / word.length();
+            } else newClue.append(clue.charAt(i));
         }
         return newClue.toString();
+    }
+
+    public boolean saveWordScore(String word, int score) {
+        return mockScoreDB.writeScoreDB(word, score);
     }
 }

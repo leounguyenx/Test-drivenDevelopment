@@ -1,3 +1,4 @@
+import mocking.MockScoreDB;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,9 @@ import java.util.Random;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class TestHangman {
     public static Hangman hangman;
     public static Random random;
@@ -17,7 +21,7 @@ public class TestHangman {
     @BeforeAll
     static void setupClass() {
         random = new Random();
-        hangman = new Hangman();
+        //hangman = new Hangman();
         hangman.loadWords();
     }
 
@@ -55,6 +59,16 @@ public class TestHangman {
             round++;
             assertTrue(usedWordsSet.add(word));
         }
+    }
+
+    @Test
+    void test_saveScoreUsingMockDB() {
+        MockScoreDB mockScoreDB = mock(MockScoreDB.class);
+        Hangman hangman1 = new Hangman(mockScoreDB);
+
+        when(mockScoreDB.writeScoreDB("apple", 10)).thenReturn(true);
+
+        assertTrue(hangman1.saveWordScore("apple",10));
     }
 }
 
