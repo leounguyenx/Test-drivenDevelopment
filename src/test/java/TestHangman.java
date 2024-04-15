@@ -1,5 +1,10 @@
 import org.junit.jupiter.api.Test;
+import tdd.Hangman;
+
+import java.io.FileNotFoundException;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class TestHangman {
@@ -15,24 +20,33 @@ public class TestHangman {
     }
 
     @Test
-    void test_CountFetchedWord() {
-        Hangman hangman = new Hangman();
-        String word = hangman.fetchedWord();
-
-        int count = word.length();
-        assertEquals(5,count);
-    }
-
-    @Test
-    void test_CountRandomFetchedWord() {
+    void test_CountRandomFetchedWord() throws FileNotFoundException {
         //From 5-10
         Random random = new Random();
         int expectedLength = random.nextInt(6) + 5;
 
         Hangman hangman = new Hangman();
+        hangman.loadWords();
         String randomWord = hangman.randomFetchedWord(expectedLength);
 
         assertEquals(expectedLength, randomWord.length());
+    }
+
+    @Test
+    void test_uniquenessOfFetchedWord() throws FileNotFoundException {
+        Random random = new Random();
+        int requestedLength = 0;
+        Set<String> usedWordsSet = new HashSet<>();
+        int round = 0;
+        String word = null;
+        Hangman hangman = new Hangman();
+        hangman.loadWords();
+        while (round < 100) {
+            requestedLength = random.nextInt(6) + 5;
+            word = hangman.randomFetchedWord(requestedLength);
+            round++;
+            assertTrue(usedWordsSet.add(word));
+        }
     }
 }
 
